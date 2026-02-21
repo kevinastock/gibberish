@@ -19,6 +19,12 @@ pub struct ReplOptions<'a> {
     pub yolo: bool,
 }
 
+#[derive(Debug, Clone, Copy)]
+struct LineExecutionConfig {
+    verbose: u8,
+    default_wait_seconds: f64,
+}
+
 pub async fn run_repl(
     session: &TerminalSession,
     options: ReplOptions<'_>,
@@ -31,7 +37,10 @@ pub async fn run_repl(
         options.yolo,
         session_capture.clone(),
     )?;
-    let default_wait_seconds = Duration::from_millis(options.wait_ms).as_secs_f64();
+    let line_exec_config = LineExecutionConfig {
+        verbose: options.verbose,
+        default_wait_seconds: Duration::from_millis(options.wait_ms).as_secs_f64(),
+    };
     let skin = resolve_skin(options.skin_mode);
     let mut last_response_total_tokens: Option<u64> = None;
 
@@ -47,10 +56,9 @@ pub async fn run_repl(
         if let LineControl::Quit = process_line(
             session,
             &mut agent_runtime,
-            &options,
+            line_exec_config,
             session_capture.as_ref(),
             &skin,
-            default_wait_seconds,
             &line,
             &mut last_response_total_tokens,
         )
@@ -76,16 +84,18 @@ pub async fn run_single_command(
         options.yolo,
         session_capture.clone(),
     )?;
-    let default_wait_seconds = Duration::from_millis(options.wait_ms).as_secs_f64();
+    let line_exec_config = LineExecutionConfig {
+        verbose: options.verbose,
+        default_wait_seconds: Duration::from_millis(options.wait_ms).as_secs_f64(),
+    };
     let skin = resolve_skin(options.skin_mode);
     let mut last_response_total_tokens = None;
     process_line(
         session,
         &mut agent_runtime,
-        &options,
+        line_exec_config,
         session_capture.as_ref(),
         &skin,
-        default_wait_seconds,
         line,
         &mut last_response_total_tokens,
     )
@@ -102,10 +112,9 @@ enum LineControl {
 async fn process_line(
     session: &TerminalSession,
     agent_runtime: &mut AgentRuntime,
-    options: &ReplOptions<'_>,
+    config: LineExecutionConfig,
     session_capture: Option<&SessionCapture>,
     skin: &MadSkin,
-    default_wait_seconds: f64,
     line: &str,
     last_response_total_tokens: &mut Option<u64>,
 ) -> Result<LineControl> {
@@ -127,7 +136,7 @@ async fn process_line(
         }
         ":snap" => {
             let snapshot = session.snapshot().await?;
-            print_snapshot(&snapshot, options.verbose);
+            print_snapshot(&snapshot, config.verbose);
             return Ok(LineControl::Continue);
         }
         ":reset" => {
@@ -135,7 +144,7 @@ async fn process_line(
             agent_runtime.reset();
             *last_response_total_tokens = None;
             let snapshot = session.snapshot().await?;
-            print_snapshot(&snapshot, options.verbose);
+            print_snapshot(&snapshot, config.verbose);
             return Ok(LineControl::Continue);
         }
         _ => {}
@@ -144,7 +153,9 @@ async fn process_line(
     if trimmed.starts_with(':') {
         match parse_prefixed_command(trimmed) {
             Some(command) => {
-                match execute_prefixed_command(agent_runtime, command, default_wait_seconds).await {
+                match execute_prefixed_command(agent_runtime, command, config.default_wait_seconds)
+                    .await
+                {
                     Ok(snapshot) => println!("{snapshot}"),
                     Err(err) => eprintln!("command error: {err}"),
                 }
