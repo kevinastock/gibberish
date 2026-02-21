@@ -1,5 +1,6 @@
 .gibberish_history
 *.toml
+!Cargo.toml
 !gibberish.toml
 *.html
 
