@@ -1,5 +1,9 @@
 # GibberiSH
 
+[![CI](https://github.com/kevinastock/gibberish/actions/workflows/rust-tests.yml/badge.svg)](https://github.com/kevinastock/gibberish/actions/workflows/rust-tests.yml)
+![Rust 2024](https://img.shields.io/badge/rust-2024-orange)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
+
 Some people want to make agents safe and reliable.
 Some people want to make them ubiquitous.
 I want to make them feel the pain of the tools we use every day.
@@ -69,11 +73,13 @@ You'll need to put an OpenAI API key in that file or in your environment as `OPE
 
 When you're in the interactive prompt, lines go to the agent unless you start with `:`.
 
-- `:raw <escaped-bytes>`: Send bytes to the PTY, including control chars like `\x03`.
-- `:snap`: Print the terminal screen.
-- `:reset`: Restart the shell and wipe the agent chat history.
-- `:help`: Print the command cheat sheet.
-- `:quit` / `:q`: Quit.
+| Command | Description |
+| --- | --- |
+| `:raw <escaped-bytes>` | Send bytes to the PTY, including control chars like `\x03`. |
+| `:snap` | Print the terminal screen. |
+| `:reset` | Restart the shell and wipe the agent chat history. |
+| `:help` | Print the command cheat sheet. |
+| `:quit` / `:q` | Quit. |
 
 ## Development
 
