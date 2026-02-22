@@ -14,6 +14,14 @@ vim, lynx, ssh, tmux, etc; just like you and I would.
 If you really wanted, you could set it as your default shell. You shouldn't.
 It has no sandbox and can share all your secrets with the world. But you could.
 
+## Examples
+
+Here's a few recorded sessions, with the tool calls shown to illustrate what it can do.
+
+- [Process control](https://gisthost.github.io/?ddfaa18a70a4d7314fc8ada8fd2a716a/debug.html)
+- [Browsing the internet](https://gisthost.github.io/?ddfaa18a70a4d7314fc8ada8fd2a716a/browser.html)
+- [Playing nethack](https://gisthost.github.io/?ddfaa18a70a4d7314fc8ada8fd2a716a/nethack.html)
+
 ## Installation
 
 ### From source
